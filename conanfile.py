@@ -30,8 +30,9 @@ class NatsConan(ConanFile):
         "enable_docs=False"
     )
 
-    def requirements(self):
-        self.requires.add("OpenSSL/1.1.1b@zinnion/stable")
+   # def requirements(self):
+   #     self.requires.add("OpenSSL/1.1.1b@zinnion/stable")
+   #     self.requires.add("protobuf/3.8.0@zinnion/stable")
 
     def source(self):
         tools.get("{0}/archive/v{1}.tar.gz".format(self.homepage, self.version))
@@ -44,18 +45,20 @@ class NatsConan(ConanFile):
     def configure_cmake(self):
         cmake = CMake(self)
         cmake.definitions["NATS_UPDATE_DOC"] = self.options.enable_docs
-        cmake.definitions['OPENSSL_ROOT_DIR'] = self.deps_cpp_info['OpenSSL'].rootpath
+        #cmake.definitions['OPENSSL_ROOT_DIR'] = self.deps_cpp_info['OpenSSL'].rootpath
         cmake.configure(source_folder=self.source_subfolder, build_folder=self.build_subfolder)
         return cmake
-
+    #pbuf/lib/linux/libprotobuf-c.so
     def build(self):
         cmake = self.configure_cmake()
         cmake.build()
 
     def package(self):
         self.copy(pattern="LICENSE.txt", dst="license", src=self.source_subfolder)
+        self.copy(src=self.source_subfolder+"/pbuf/lib/linux/", pattern="*.so", dst="lib", keep_path=False)
         cmake = self.configure_cmake()
         cmake.install()
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = ["nats", "protobuf"]
