@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, CMake, tools, RunEnvironment
 import os
 
 class NatsConan(ConanFile):
@@ -39,16 +39,27 @@ class NatsConan(ConanFile):
         #cmake.definitions['OPENSSL_ROOT_DIR'] = self.deps_cpp_info['OpenSSL'].rootpath
         cmake.configure(source_folder=self.source_subfolder, build_folder=self.build_subfolder)
         return cmake
-    #pbuf/lib/linux/libprotobuf-c.so
+
     def build(self):
-        cmake = self.configure_cmake()
-        cmake.build()
+        env_build = RunEnvironment(self)
+        with tools.environment_append(env_build.vars):
+           cmake = self.configure_cmake()
+           cmake.build()
 
     def package(self):
         self.copy(pattern="LICENSE.txt", dst="license", src=self.source_subfolder)
-        self.copy(src=self.source_subfolder+"/pbuf/lib/linux/", pattern="*.so", dst="lib", keep_path=False)
+        if self.settings.os == "Linux":
+           self.copy(src=self.source_subfolder+"/pbuf/lib/linux/", pattern="*.so", dst="lib", keep_path=False)
+           self.copy(src=self.source_subfolder+"/pbuf/lib/linux/", pattern="*.so", dst="lib/debug", keep_path=False)
+        elif self.settings.os == "macOS":
+           self.copy(src=self.source_subfolder+"/pbuf/lib/darwin/", pattern="*.so", dst="lib", keep_path=False)
+           self.copy(src=self.source_subfolder+"/pbuf/lib/darwin/", pattern="*.so", dst="lib/debug", keep_path=False)
+
         cmake = self.configure_cmake()
         cmake.install()
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = ["nats", "protobuf-c"]
+        if self.settings.build_type == "Debug":
+            self.cpp_info.libdirs = ["lib/debug"]
