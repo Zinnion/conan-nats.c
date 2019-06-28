@@ -49,11 +49,12 @@ class NatsConan(ConanFile):
     def package(self):
         self.copy(pattern="LICENSE.txt", dst="license", src=self.source_subfolder)
         if self.settings.os == "Linux":
-           self.copy(src=self.source_subfolder+"/pbuf/lib/linux/", pattern="*.so", dst="lib", keep_path=False)
-           self.copy(src=self.source_subfolder+"/pbuf/lib/linux/", pattern="*.so", dst="lib/debug", keep_path=False)
-        elif self.settings.os == "macOS":
-           self.copy(src=self.source_subfolder+"/pbuf/lib/darwin/", pattern="*.so", dst="lib", keep_path=False)
-           self.copy(src=self.source_subfolder+"/pbuf/lib/darwin/", pattern="*.so", dst="lib/debug", keep_path=False)
+           self.copy(src=self.source_subfolder, pattern="*.so", dst="lib", keep_path=False)
+           self.copy(src=self.source_subfolder, pattern="*.so", dst="lib/debug", keep_path=False)
+        elif self.settings.os == "Macos":
+           self.copy(pattern="LICENSE.txt", dst="license", src=self.source_subfolder)
+           self.copy(src=self.source_subfolder, pattern="*.a", dst="lib", keep_path=False)
+           self.copy(src=self.source_subfolder, pattern="*.a", dst="lib/debug", keep_path=False)
 
         cmake = self.configure_cmake()
         cmake.install()
@@ -61,5 +62,5 @@ class NatsConan(ConanFile):
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
         self.cpp_info.libs = ["nats", "protobuf-c"]
-        if self.settings.build_type == "Debug":
-            self.cpp_info.libdirs = ["lib/debug"]
+        #if self.settings.build_type == "Debug":
+        #    self.cpp_info.libdirs = ["lib/debug"]
