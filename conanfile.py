@@ -47,6 +47,8 @@ class NatsConan(ConanFile):
            cmake.build()
 
     def package(self):
+	#print "There are ", self.settings.os , "births"
+
         self.copy(pattern="LICENSE.txt", dst="license", src=self.source_subfolder)
         if self.settings.os == "Linux":
            self.copy(src=self.source_subfolder, pattern="*.so", dst="lib", keep_path=False)

@@ -95,7 +95,8 @@ int main(int argc, char **argv)
                 break;
 
             if (s == NATS_OK)
-                nats_Sleep(1000);
+                //nats_Sleep(1000);
+		 break;
         }
     }
     else if (s == NATS_OK)
