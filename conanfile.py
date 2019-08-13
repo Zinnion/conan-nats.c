@@ -6,7 +6,7 @@ import os
 
 class NatsConan(ConanFile):
     name = "nats.c"
-    version = "1.8.0"
+    version = "2.0.0"
     description = "A C client for NATS"
     topics = ("conan", "nats.c", "communication", "messaging", "protocols")
     url = "https://github.com/zinnion/conan-nats.c"
@@ -24,7 +24,7 @@ class NatsConan(ConanFile):
     default_options = ()
 
     #def requirements(self):
-    #    self.requires.add("OpenSSL/1.1.1b@zinnion/stable")
+        #self.requires.add("OpenSSL/1.1.1b@zinnion/stable")
 
     def source(self):
         tools.get("{0}/archive/v{1}.tar.gz".format(self.homepage, self.version))
@@ -37,6 +37,10 @@ class NatsConan(ConanFile):
     def configure_cmake(self):
         cmake = CMake(self)
         #cmake.definitions['OPENSSL_ROOT_DIR'] = self.deps_cpp_info['OpenSSL'].rootpath
+        #cmake.definitions['OPENSSL_INCLUDE_DIR'] = self.deps_cpp_info['OpenSSL'].include_paths[0]
+        #cmake.definitions['OPENSSL_LIB_DIR'] = self.deps_cpp_info['OpenSSL'].lib_paths[0]
+        #cmake.definitions['OPENSSL_LIBRARIES'] = ';'.join(self.deps_cpp_info['OpenSSL'].libs)
+        cmake.definitions['NATS_PROTOBUF_DIR'] = "/usr/local/include/protobuf-c"
         cmake.configure(source_folder=self.source_subfolder, build_folder=self.build_subfolder)
         return cmake
 
