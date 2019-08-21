@@ -27,9 +27,12 @@ class NatsConan(ConanFile):
         #self.requires.add("OpenSSL/1.1.1b@zinnion/stable")
 
     def source(self):
-        tools.get("{0}/archive/v{1}.tar.gz".format(self.homepage, self.version))
-        extracted_dir = self.name + "-" + self.version
-        os.rename(extracted_dir, self.source_subfolder)
+        self.run("git clone https://github.com/nats-io/nats.c.git source_subfolder")
+	#self.run("git clone https://github.com/nats-io/nats.c.git source_subfolder")
+        #tools.get("{0}/archive/v{1}.tar.gz".format(self.homepage, self.version))
+	#self.run("git clone https://github.com/nats-io/nats.c.git source_subfolder")
+        #extracted_dir = self.name + "-" + self.version
+        #os.rename(extracted_dir, self.source_subfolder)
 
     def configure(self):
         del self.settings.compiler.libcxx
@@ -41,6 +44,9 @@ class NatsConan(ConanFile):
         #cmake.definitions['OPENSSL_LIB_DIR'] = self.deps_cpp_info['OpenSSL'].lib_paths[0]
         #cmake.definitions['OPENSSL_LIBRARIES'] = ';'.join(self.deps_cpp_info['OpenSSL'].libs)
         cmake.definitions['NATS_PROTOBUF_DIR'] = "/usr/local/include/protobuf-c"
+        cmake.definitions['NATS_BUILD_LIB_SHARED'] = "ON"
+        cmake.definitions['NATS_BUILD_LIB_STATIC'] = "OFF"
+        #cmake.definitions['NATS_BUILD_TLS_USE_OPENSSL_1_1_API'] = "ON"
         cmake.configure(source_folder=self.source_subfolder, build_folder=self.build_subfolder)
         return cmake
 
@@ -60,13 +66,15 @@ class NatsConan(ConanFile):
         elif self.settings.os == "Macos":
            self.copy(pattern="LICENSE.txt", dst="license", src=self.source_subfolder)
            self.copy(src=self.source_subfolder, pattern="*.a", dst="lib", keep_path=False)
+           self.copy(src=self.source_subfolder, pattern="*.dylib", dst="lib", keep_path=False)
            self.copy(src=self.source_subfolder, pattern="*.a", dst="lib/debug", keep_path=False)
+           self.copy(src=self.source_subfolder, pattern="*.dylib", dst="lib/debug", keep_path=False)
 
         cmake = self.configure_cmake()
         cmake.install()
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
-        self.cpp_info.libs = ["nats", "protobuf-c"]
+        #self.cpp_info.libs = ["nats", "protobuf-c"]
         #if self.settings.build_type == "Debug":
         #    self.cpp_info.libdirs = ["lib/debug"]
