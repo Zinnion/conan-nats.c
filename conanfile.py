@@ -6,7 +6,7 @@ import os
 
 class NatsConan(ConanFile):
     name = "nats.c"
-    version = "2.0.0"
+    version = "2.1.0"
     description = "A C client for NATS"
     topics = ("conan", "nats.c", "communication", "messaging", "protocols")
     url = "https://github.com/zinnion/conan-nats.c"
@@ -46,7 +46,7 @@ class NatsConan(ConanFile):
         cmake.definitions['NATS_PROTOBUF_DIR'] = "/usr/local/include/protobuf-c"
         cmake.definitions['NATS_BUILD_LIB_SHARED'] = "ON"
         cmake.definitions['NATS_BUILD_LIB_STATIC'] = "OFF"
-        #cmake.definitions['NATS_BUILD_TLS_USE_OPENSSL_1_1_API'] = "ON"
+        cmake.definitions['NATS_BUILD_TLS_USE_OPENSSL_1_1_API'] = "ON"
         cmake.configure(source_folder=self.source_subfolder, build_folder=self.build_subfolder)
         return cmake
 
